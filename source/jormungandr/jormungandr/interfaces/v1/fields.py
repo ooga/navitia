@@ -38,7 +38,7 @@ from jormungandr import utils
 from jormungandr.interfaces.v1.make_links import create_internal_link
 from jormungandr.timezone import get_timezone
 from navitiacommon import response_pb2, type_pb2
-
+from random import randint
 
 class PbField(fields.Nested):
 
@@ -219,9 +219,7 @@ class NonNullString(fields.Raw):
         else:
             return fields.get_value(k, obj)
 
-
 class additional_informations(fields.Raw):
-
     def output(self, key, obj):
         properties = obj.properties
         descriptor = properties.DESCRIPTOR
@@ -229,6 +227,12 @@ class additional_informations(fields.Raw):
         return [str.lower(enum.values_by_number[v].name) for v
                 in properties.additional_informations]
 
+class bss_stands(fields.Raw):
+    def output(self, key, obj):
+        if obj.poi_type.uri == 'poi_type:amenity:bicycle_rental':
+            total = randint(10, 20)
+            available = randint(0, total)
+            return {"total": total, "available": available, "occupied": total - available}
 
 class equipments(fields.Raw):
     def output(self, key, obj):
@@ -237,7 +241,6 @@ class equipments(fields.Raw):
         enum = descriptor.enum_types_by_name["Equipment"]
         return [str.lower(enum.values_by_number[v].name) for v
                 in equipments.has_equipments]
-
 
 class disruption_status(fields.Raw):
     def output(self, key, obj):
@@ -606,6 +609,7 @@ stop_area["physical_modes"] = NonNullList(NonNullNested(physical_mode))
 poi_type = deepcopy(generic_type)
 poi = deepcopy(generic_type_admin)
 poi["poi_type"] = PbField(poi_type)
+poi["stands"] = bss_stands()
 poi["properties"] = get_key_value()
 poi["label"] = fields.String()
 
