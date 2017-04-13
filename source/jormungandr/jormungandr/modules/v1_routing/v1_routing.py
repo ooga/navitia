@@ -43,6 +43,7 @@ from jormungandr.interfaces.v1 import Calendars
 from jormungandr.interfaces.v1 import converters_collection_type
 from jormungandr.interfaces.v1 import Status
 from jormungandr.interfaces.v1 import GeoStatus
+from jormungandr.interfaces.v1 import JSONSchema
 from werkzeug.routing import BaseConverter, FloatConverter, PathConverter
 from jormungandr.modules_loader import AModule
 from jormungandr import app
@@ -242,3 +243,7 @@ class V1Routing(AModule):
                           region + '<uri:uri>/calendars',
                           region + "calendars/<id:id>",
                           endpoint="calendars")
+
+        self.add_resource(JSONSchema.Schema,
+                          '/schema',
+                          endpoint="schema")
