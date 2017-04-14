@@ -69,11 +69,18 @@ class PtObjectSerializer(GenericSerializer):
     trip = serpy.MethodField(display_none=False)
     embedded_type = EnumField(attr='embedded_type')
 
+
+    def get_trip_jsonschema_pre_type_mapping(self):
+        return TripSerializer(display_none=False)
+
     def get_trip(self, obj):
         if obj.HasField(str('trip')):
             return TripSerializer(obj.trip, display_none=False).data
         else:
             return None
+
+    def get_commercial_mode_jsonschema_pre_type_mapping(self):
+        return CommercialModeSerializer(display_none=False)
 
     def get_commercial_mode(self, obj):
         if obj.HasField(str('commercial_mode')):
@@ -81,11 +88,17 @@ class PtObjectSerializer(GenericSerializer):
         else:
             return None
 
+    def get_route_jsonschema_pre_type_mapping(self):
+        return RouteSerializer(display_none=False)
+
     def get_route(self, obj):
         if obj.HasField(str('route')):
             return RouteSerializer(obj.route, display_none=False).data
         else:
             return None
+
+    def get_network_jsonschema_pre_type_mapping(self):
+        return NetworkSerializer(display_none=False)
 
     def get_network(self, obj):
         if obj.HasField(str('network')):
@@ -93,11 +106,17 @@ class PtObjectSerializer(GenericSerializer):
         else:
             return None
 
+    def get_line_jsonschema_pre_type_mapping(self):
+        return LineSerializer(display_none=False)
+
     def get_line(self, obj):
         if obj.HasField(str('line')):
             return LineSerializer(obj.line, display_none=False).data
         else:
             return None
+
+    def get_stop_area_jsonschema_pre_type_mapping(self):
+        return StopAreaSerializer(display_none=False)
 
     def get_stop_area(self, obj):
         if obj.HasField(str('stop_area')):
@@ -116,6 +135,9 @@ class ImpactedStopSerializer(PbNestedSerializer):
     amended_departure_time = LocalTimeField(attr='amended_stop_time.departure_time')
     cause = serpy.Field()
     stop_time_effect = EnumField(attr='effect')
+
+    def get_stop_point_jsonschema_pre_type_mapping(self):
+        return StopPointSerializer(display_none=False)
 
     def get_stop_point(self, obj):
         if obj.HasField(str('stop_point')):
@@ -191,6 +213,9 @@ class StopPointSerializer(GenericSerializer):
     equipments = Equipments(attr='has_equipments')
     address = AddressSerializer(display_none=False)
 
+    def get_stop_area_jsonschema_pre_type_mapping(self):
+        return StopAreaSerializer(display_none=False)
+
     def get_stop_area(self, obj):
         if obj.HasField(str('stop_area')):
             return StopAreaSerializer(obj.stop_area, display_none=False).data
@@ -227,6 +252,9 @@ class NetworkSerializer(GenericSerializer):
     links = LinkSerializer(attr='impact_uris')
     codes = CodeSerializer(many=True, display_none=False)
 
+    def get_lines_jsonschema_pre_type_mapping(self):
+        return LineSerializer(many=True, display_none=False)
+
     def get_lines(self, obj):
         return LineSerializer(obj.lines, many=True, display_none=False).data
 
@@ -242,6 +270,9 @@ class RouteSerializer(GenericSerializer):
     line = serpy.MethodField(display_none=False)
     stop_points = StopPointSerializer(many=True, display_none=False)
 
+    def get_line_jsonschema_pre_type_mapping(self):
+        return LineSerializer(display_none=False)
+
     def get_line(self, obj):
         if obj.HasField(str('line')):
             return LineSerializer(obj.line, display_none=False).data
@@ -253,8 +284,14 @@ class LineGroupSerializer(GenericSerializer):
     main_line = serpy.MethodField(display_none=False)
     comments = CommentSerializer(many=True)
 
+    def get_lines_jsonschema_pre_type_mapping(self):
+        return LineSerializer(many=True, display_none=False)
+
     def get_lines(self, obj):
         return LineSerializer(obj.lines, many=True, display_none=False).data
+
+    def get_main_line_jsonschema_pre_type_mapping(self):
+        return LineSerializer()
 
     def get_main_line(self, obj):
         if obj.HasField(str('main_line')):
