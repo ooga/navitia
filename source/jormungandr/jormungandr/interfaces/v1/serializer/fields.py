@@ -27,12 +27,12 @@
 
 from __future__ import absolute_import, print_function, unicode_literals, division
 from flask import g
-from jormungandr.interfaces.v1.make_links import create_internal_link, create_external_link
-from jormungandr.interfaces.v1.serializer.base import EnumField, PbNestedSerializer, EnumListField
-from jormungandr.interfaces.v1.serializer.time import LocalTimeField, DateTimeField, PeriodSerializer
+from jormungandr.interfaces.v1.make_links import create_internal_link
+from jormungandr.interfaces.v1.serializer.base import EnumField, PbNestedSerializer
 import operator
 import serpy
 from jormungandr.interfaces.v1.serializer import jsonschema
+
 
 class MultiLineStringField(jsonschema.Field):
 
@@ -77,27 +77,33 @@ class PropertySerializer(serpy.Serializer):
     name = serpy.Field()
     value = serpy.Field()
 
+
 class FeedPublisherSerializer(PbNestedSerializer):
     id = serpy.StrField()
     name = serpy.StrField()
     url = serpy.StrField()
     license = serpy.StrField()
 
+
 class ErrorSerializer(PbNestedSerializer):
     id = EnumField(attr='id')
     message = serpy.StrField()
+
 
 class CoordSerializer(serpy.Serializer):
     lon = serpy.StrField()
     lat = serpy.StrField()
 
+
 class CodeSerializer(serpy.Serializer):
     type = serpy.Field()
     value = serpy.Field()
 
+
 class CommentSerializer(serpy.Serializer):
     value = serpy.Field()
     type = serpy.Field()
+
 
 class FirstCommentField(jsonschema.Field):
     """
@@ -120,6 +126,7 @@ class FirstCommentField(jsonschema.Field):
             return item.value
         else:
             return None
+
 
 class LinkSerializer(jsonschema.Field):
     """
@@ -164,6 +171,7 @@ class LinkSerializer(jsonschema.Field):
     def to_value(self, value):
         return [create_internal_link(_type="disruption", rel="disruptions", id=uri)
                 for uri in value]
+
 
 class PaginationSerializer(serpy.Serializer):
     total_result = serpy.IntField(attr='totalResult')
