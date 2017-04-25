@@ -56,6 +56,7 @@ from jormungandr.resources_utc import ResourceUtc
 from datetime import datetime
 from flask import g, current_app
 
+from jormungandr.interfaces.v1.serializer import jsonschema
 from jormungandr.interfaces.v1.serializer import serialize_with
 from jormungandr.interfaces.v1.serializer import api
 
@@ -234,6 +235,9 @@ def commercial_modes(is_collection):
             else:
                 collections = marshal_with(OrderedDict(self.collections), display_null=False)
             self.method_decorators.insert(1, collections)
+
+        def options(self, **kwargs):
+            return jsonschema.JsonSchemaSerializer(api.CommercialModesSerializer, root=True).data, 200
     return CommercialModes
 
 
@@ -328,6 +332,9 @@ def physical_modes(is_collection):
             else:
                 collections = marshal_with(OrderedDict(self.collections), display_null=False)
             self.method_decorators.insert(1, collections)
+
+        def options(self, **kwargs):
+            return jsonschema.JsonSchemaSerializer(api.PhysicalModesSerializer, root=True).data, 200
     return PhysicalModes
 
 
@@ -355,6 +362,9 @@ def stop_points(is_collection):
             self.parsers["get"].add_argument("original_id", type=unicode,
                             description="original uri of the object you"
                                     "want to query")
+
+        def options(self, **kwargs):
+            return jsonschema.JsonSchemaSerializer(api.StopPointsSerializer, root=True).data, 200
     return StopPoints
 
 
@@ -383,6 +393,9 @@ def stop_areas(is_collection):
             self.parsers["get"].add_argument("original_id", type=unicode,
                             description="original uri of the object you"
                                     "want to query")
+
+        def options(self, **kwargs):
+            return jsonschema.JsonSchemaSerializer(api.StopAreasSerializer, root=True).data, 200
     return StopAreas
 
 
@@ -480,6 +493,9 @@ def routes(is_collection):
             self.parsers["get"].add_argument("original_id", type=unicode,
                             description="original uri of the object you"
                                     "want to query")
+
+        def options(self, **kwargs):
+            return jsonschema.JsonSchemaSerializer(api.RoutesSerializer, root=True).data, 200
     return Routes
 
 
@@ -505,6 +521,9 @@ def line_groups(is_collection):
             self.parsers["get"].add_argument("original_id", type=unicode,
                             description="original uri of the object you"
                                     "want to query")
+
+        def options(self, **kwargs):
+            return jsonschema.JsonSchemaSerializer(api.LineGroupsSerializer, root=True).data, 200
     return LineGroups
 
 
@@ -534,6 +553,9 @@ def lines(is_collection):
             self.parsers["get"].add_argument("original_id", type=unicode,
                             description="original uri of the object you"
                                     "want to query")
+
+        def options(self, **kwargs):
+            return jsonschema.JsonSchemaSerializer(api.LinesSerializer, root=True).data, 200
     return Lines
 
 
@@ -594,6 +616,9 @@ def networks(is_collection):
             self.parsers["get"].add_argument("original_id", type=unicode,
                             description="original uri of the object you"
                                     "want to query")
+
+        def options(self, **kwargs):
+            return jsonschema.JsonSchemaSerializer(api.NetworksSerializer, root=True).data, 200
     return Networks
 
 
@@ -619,6 +644,9 @@ def disruptions(is_collection):
             self.parsers["get"].add_argument("original_id", type=unicode,
                             description="original uri of the object you"
                                     "want to query")
+
+        def options(self, **kwargs):
+            return jsonschema.JsonSchemaSerializer(api.DisruptionsSerializer, root=True).data, 200
     return Disruptions
 
 

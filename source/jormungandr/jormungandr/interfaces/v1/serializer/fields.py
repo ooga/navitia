@@ -32,11 +32,12 @@ from jormungandr.interfaces.v1.serializer.base import EnumField, PbNestedSeriali
 from jormungandr.interfaces.v1.serializer.time import LocalTimeField, DateTimeField, PeriodSerializer
 import operator
 import serpy
+from jormungandr.interfaces.v1.serializer import jsonschema
 
-class MultiLineStringField(serpy.Field):
+class MultiLineStringField(jsonschema.Field):
 
-    def _jsonschema_type_mapping(self):
-        return {
+    def __init__(self, schema_type=None, schema_metadata={}, **kwargs):
+        schema_metadata.update({
             'type': 'object',
             'properties': {
                 'type': {
@@ -55,7 +56,8 @@ class MultiLineStringField(serpy.Field):
                 }
             },
             'required': ['type', 'coordinates']
-        }
+        })
+        super(MultiLineStringField, self).__init__(schema_type, schema_metadata, **kwargs)
 
     def to_value(self, value):
         if getattr(g, 'disable_geojson', False):
@@ -97,13 +99,17 @@ class CommentSerializer(serpy.Serializer):
     value = serpy.Field()
     type = serpy.Field()
 
-class FirstCommentField(serpy.Field):
+class FirstCommentField(jsonschema.Field):
     """
     for compatibility issue we want to continue to output a 'comment' field
     even if now we have a list of comments, so we take the first one
     """
-    def _jsonschema_pre_type_mapping(self):
-        return CommentSerializer(attr=self.attr, label=self.label, required=self.required, display_none=self.display_none)
+
+    def __init__(self, schema_type=None, schema_metadata={}, **kwargs):
+        schema_type = CommentSerializer()
+        for key, value in kwargs.items() :
+            setattr(schema_type, key, value)
+        super(FirstCommentField, self).__init__(schema_type, schema_metadata, **kwargs)
 
     def as_getter(self, serializer_field_name, serializer_cls):
         op = operator.attrgetter(self.attr or serializer_field_name)
@@ -115,12 +121,13 @@ class FirstCommentField(serpy.Field):
         else:
             return None
 
-class LinkSerializer(serpy.Field):
+class LinkSerializer(jsonschema.Field):
     """
     Add link to disruptions on a pt object
     """
-    def _jsonschema_type_mapping(self):
-        return {
+
+    def __init__(self, schema_type=None, schema_metadata={}, **kwargs):
+        schema_metadata.update({
             'type': 'array',
             'items': [
                 {
@@ -151,7 +158,8 @@ class LinkSerializer(serpy.Field):
                     'required': ['type', 'rel', 'templated']
                 }
             ]
-        }
+        })
+        super(LinkSerializer, self).__init__(schema_type, schema_metadata, **kwargs)
 
     def to_value(self, value):
         return [create_internal_link(_type="disruption", rel="disruptions", id=uri)

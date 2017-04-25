@@ -31,6 +31,7 @@ from __future__ import absolute_import, print_function, unicode_literals, divisi
 import serpy
 from jormungandr.interfaces.v1.serializer.base import PbNestedSerializer, GenericSerializer, EnumField
 from jormungandr.interfaces.v1.serializer.fields import *
+from jormungandr.interfaces.v1.serializer import jsonschema
 import logging
 
 
@@ -61,16 +62,16 @@ class SeveritySerializer(PbNestedSerializer):
 
 class PtObjectSerializer(GenericSerializer):
     quality = serpy.Field(required=False)
-    stop_area = serpy.MethodField(display_none=False)
-    line = serpy.MethodField(display_none=False)
-    network = serpy.MethodField(display_none=False)
-    route = serpy.MethodField(display_none=False)
-    commercial_mode = serpy.MethodField(display_none=False)
-    trip = serpy.MethodField(display_none=False)
+    stop_area = jsonschema.MethodField(schema_type='get_stop_area_jsonschema', display_none=False)
+    line = jsonschema.MethodField(schema_type='get_line_jsonschema', display_none=False)
+    network = jsonschema.MethodField(schema_type='get_network_jsonschema', display_none=False)
+    route = jsonschema.MethodField(schema_type='get_route_jsonschema', display_none=False)
+    commercial_mode = jsonschema.MethodField(schema_type='get_commercial_mode_jsonschema', display_none=False)
+    trip = jsonschema.MethodField(schema_type='get_trip_jsonschema', display_none=False)
     embedded_type = EnumField(attr='embedded_type')
 
 
-    def get_trip_jsonschema_pre_type_mapping(self):
+    def get_trip_jsonschema(self):
         return TripSerializer(display_none=False)
 
     def get_trip(self, obj):
@@ -79,7 +80,7 @@ class PtObjectSerializer(GenericSerializer):
         else:
             return None
 
-    def get_commercial_mode_jsonschema_pre_type_mapping(self):
+    def get_commercial_mode_jsonschema(self):
         return CommercialModeSerializer(display_none=False)
 
     def get_commercial_mode(self, obj):
@@ -88,7 +89,7 @@ class PtObjectSerializer(GenericSerializer):
         else:
             return None
 
-    def get_route_jsonschema_pre_type_mapping(self):
+    def get_route_jsonschema(self):
         return RouteSerializer(display_none=False)
 
     def get_route(self, obj):
@@ -97,7 +98,7 @@ class PtObjectSerializer(GenericSerializer):
         else:
             return None
 
-    def get_network_jsonschema_pre_type_mapping(self):
+    def get_network_jsonschema(self):
         return NetworkSerializer(display_none=False)
 
     def get_network(self, obj):
@@ -106,7 +107,7 @@ class PtObjectSerializer(GenericSerializer):
         else:
             return None
 
-    def get_line_jsonschema_pre_type_mapping(self):
+    def get_line_jsonschema(self):
         return LineSerializer(display_none=False)
 
     def get_line(self, obj):
@@ -115,7 +116,7 @@ class PtObjectSerializer(GenericSerializer):
         else:
             return None
 
-    def get_stop_area_jsonschema_pre_type_mapping(self):
+    def get_stop_area_jsonschema(self):
         return StopAreaSerializer(display_none=False)
 
     def get_stop_area(self, obj):
@@ -128,7 +129,7 @@ class TripSerializer(GenericSerializer):
     pass#@TODO
 
 class ImpactedStopSerializer(PbNestedSerializer):
-    stop_point = serpy.MethodField(display_none=False)
+    stop_point = jsonschema.MethodField(schema_type='get_stop_point_jsonschema', display_none=False)
     base_arrival_time = LocalTimeField(attr='base_stop_time.arrival_time')
     base_departure_time = LocalTimeField(attr='base_stop_time.departure_time')
     amended_arrival_time = LocalTimeField(attr='amended_stop_time.arrival_time')
@@ -136,7 +137,7 @@ class ImpactedStopSerializer(PbNestedSerializer):
     cause = serpy.Field()
     stop_time_effect = EnumField(attr='effect')
 
-    def get_stop_point_jsonschema_pre_type_mapping(self):
+    def get_stop_point_jsonschema(self):
         return StopPointSerializer(display_none=False)
 
     def get_stop_point(self, obj):
@@ -209,11 +210,11 @@ class StopPointSerializer(GenericSerializer):
     commercial_modes = CommercialModeSerializer(many=True, display_none=False)
     physical_modes = PhysicalModeSerializer(many=True, display_none=False)
     administrative_regions = AdminSerializer(many=True, display_none=False)
-    stop_area = serpy.MethodField(display_none=False)
+    stop_area = jsonschema.MethodField(schema_type='get_stop_area_jsonschema', display_none=False)
     equipments = Equipments(attr='has_equipments')
     address = AddressSerializer(display_none=False)
 
-    def get_stop_area_jsonschema_pre_type_mapping(self):
+    def get_stop_area_jsonschema(self):
         return StopAreaSerializer(display_none=False)
 
     def get_stop_area(self, obj):
@@ -248,11 +249,11 @@ class PlaceSerializer(GenericSerializer):
 #    @TODO "poi": PbField(poi),
 
 class NetworkSerializer(GenericSerializer):
-    lines = serpy.MethodField(display_none=False)
+    lines = jsonschema.MethodField(schema_type='get_lines_jsonschema', display_none=False)
     links = LinkSerializer(attr='impact_uris')
     codes = CodeSerializer(many=True, display_none=False)
 
-    def get_lines_jsonschema_pre_type_mapping(self):
+    def get_lines_jsonschema(self):
         return LineSerializer(many=True, display_none=False)
 
     def get_lines(self, obj):
@@ -267,10 +268,10 @@ class RouteSerializer(GenericSerializer):
     direction = PlaceSerializer()
     geojson = MultiLineStringField(display_none=False)
     links = LinkSerializer(attr='impact_uris')
-    line = serpy.MethodField(display_none=False)
+    line = jsonschema.MethodField(schema_type='get_line_jsonschema', display_none=False)
     stop_points = StopPointSerializer(many=True, display_none=False)
 
-    def get_line_jsonschema_pre_type_mapping(self):
+    def get_line_jsonschema(self):
         return LineSerializer(display_none=False)
 
     def get_line(self, obj):
@@ -280,17 +281,17 @@ class RouteSerializer(GenericSerializer):
             return None
 
 class LineGroupSerializer(GenericSerializer):
-    lines = serpy.MethodField(display_none=False)
-    main_line = serpy.MethodField(display_none=False)
+    lines = jsonschema.MethodField(schema_type='get_lines_jsonschema', display_none=False)
+    main_line = jsonschema.MethodField(schema_type='get_main_line_jsonschema', display_none=False)
     comments = CommentSerializer(many=True)
 
-    def get_lines_jsonschema_pre_type_mapping(self):
+    def get_lines_jsonschema(self):
         return LineSerializer(many=True, display_none=False)
 
     def get_lines(self, obj):
         return LineSerializer(obj.lines, many=True, display_none=False).data
 
-    def get_main_line_jsonschema_pre_type_mapping(self):
+    def get_main_line_jsonschema(self):
         return LineSerializer()
 
     def get_main_line(self, obj):

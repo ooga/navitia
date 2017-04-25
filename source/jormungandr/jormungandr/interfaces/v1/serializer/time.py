@@ -32,13 +32,14 @@ import serpy
 from datetime import datetime
 from jormungandr.interfaces.v1.serializer.base import PbField, PbNestedSerializer
 from jormungandr.utils import timestamp_to_str
+from jormungandr.interfaces.v1.serializer import jsonschema
 
 
 # a time null value is represented by the max value (since 0 is a perfectly valid value)
 # WARNING! be careful to change that value if the time type change (from uint64 to uint32 for example)
 __date_time_null_value__ = 2**64 - 1
 
-class LocalTimeField(serpy.Field):
+class LocalTimeField(jsonschema.Field):
     """
     This field convert a number of second from midnight to a string with the format: HH:MM:SS
     No conversion from UTC will be done, we expect the time to already be in desired timezone
@@ -48,11 +49,9 @@ class LocalTimeField(serpy.Field):
             return ""
         return datetime.utcfromtimestamp(value).strftime('%H%M%S')
 
-    def _jsonschema_type_mapping(self):
-        return {
-            'type': 'string',
-            'pattern': 'd{2}\d{2}\d{2}'
-        }
+    def __init__(self, schema_type=str, schema_metadata={}, **kwargs):
+        schema_metadata.update(pattern='d{2}\d{2}\d{2}')
+        super(LocalTimeField, self).__init__(schema_type, schema_metadata, **kwargs)
 
 class DateTimeField(PbField):
     """
@@ -61,11 +60,9 @@ class DateTimeField(PbField):
     def to_value(self, value):
         return timestamp_to_str(value)
 
-    def _jsonschema_type_mapping(self):
-        return {
-            'type': 'string',
-            'pattern': '\d{4}\d{2}\d{2}T\d{2}\d{2}\d{2}'
-        }
+    def __init__(self, schema_type=str, schema_metadata={}, **kwargs):
+        schema_metadata.update(pattern='\d{4}\d{2}\d{2}T\d{2}\d{2}\d{2}')
+        super(DateTimeField, self).__init__(schema_type, schema_metadata, **kwargs)
 
 class PeriodSerializer(PbNestedSerializer):
     begin = DateTimeField()
