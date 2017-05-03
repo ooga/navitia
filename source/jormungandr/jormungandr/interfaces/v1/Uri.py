@@ -72,8 +72,10 @@ class Uri(ResourceUri, ResourceUtc):
         parser.add_argument("start_page", type=int, default=0,
                             description="The page where you want to start")
         parser.add_argument("count", type=default_count_arg_type, default=25,
+                            schema_type=int, schema_metadata={"minimum": 0, "maximum": 1000},
                             description="Number of objects you want on a page")
         parser.add_argument("depth", type=depth_argument,
+                            schema_type=int,
                             default=1,
                             description="The depth of your object")
         parser.add_argument("forbidden_id[]", type=unicode,
@@ -92,8 +94,10 @@ class Uri(ResourceUri, ResourceUtc):
                             description="filter vehicle journeys on headsign")
         parser.add_argument("show_codes", type=boolean, default=False,
                             description="show more identification codes")
-        parser.add_argument("odt_level", type=option_value(odt_levels), default="all", description="odt level")
-        parser.add_argument("_current_datetime", type=date_time_format, default=datetime.utcnow(),
+        parser.add_argument("odt_level", type=option_value(odt_levels), default="all",
+                            schema_type=str, schema_metadata={"enum": odt_levels},
+                            description="odt level")
+        parser.add_argument("_current_datetime", type=date_time_format, default=datetime.utcnow(), hidden=True,
                             description="The datetime used to consider the state of the pt object"
                                         " Default is the current date and it is used for debug."
                                         " Note: it will mainly change the disruptions that concern the object"
@@ -102,8 +106,10 @@ class Uri(ResourceUri, ResourceUtc):
         parser.add_argument("distance", type=int, default=200,
                             description="Distance range of the query. Used only if a coord is in the query")
         parser.add_argument("since", type=date_time_format,
+                            schema_type=str,
                             description="filters objects not valid before this date")
         parser.add_argument("until", type=date_time_format,
+                            schema_type=str,
                             description="filters objects not valid after this date")
         parser.add_argument("disable_geojson", type=boolean, default=False,
                             description="remove geojson from the response")
