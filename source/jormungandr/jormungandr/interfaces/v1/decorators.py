@@ -42,6 +42,7 @@ map_serializer = {
    "line_groups": api.LineGroupsSerializer,
    "lines": api.LinesSerializer,
    "disruptions": api.DisruptionsSerializer,
+   "coverages": api.CoveragesSerializer,
 }
 
 

@@ -193,7 +193,7 @@ class Uri(ResourceUri, ResourceUtc):
 
     def options(self, **kwargs):
         collectionSerializer = map_serializer.get(self.collection, None)
-        response = jsonschema.JsonSchemaSerializer(collectionSerializer, root=True).data if collectionSerializer else None
+        response = jsonschema.JsonSchemaSerializer(collectionSerializer, root=True, endpoint=self).data if collectionSerializer else None
         return response, 200
 
 
