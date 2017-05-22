@@ -191,10 +191,10 @@ class Uri(ResourceUri, ResourceUtc):
                                       instance_name=self.region)
         return response
 
-    def options(self, **kwargs):
-        collectionSerializer = map_serializer.get(self.collection, None)
-        response = jsonschema.JsonSchemaSerializer(collectionSerializer, root=True, endpoint=self).data if collectionSerializer else None
-        return response, 200
+    # def options(self, **kwargs):
+    #     collectionSerializer = map_serializer.get(self.collection, None)
+    #     response = jsonschema.JsonSchemaSerializer(collectionSerializer, root=True, endpoint=self).data if collectionSerializer else None
+    #     return response, 200
 
 
 def journey_pattern_points(is_collection):
